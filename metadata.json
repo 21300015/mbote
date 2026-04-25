@@ -1,0 +1,8 @@
+{
+  "name": "MboteRide",
+  "description": "A real-time ride-hailing taxi application for the DR Congo area, featuring rider and driver dashboards, live maps tracking, and secure authentication.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}

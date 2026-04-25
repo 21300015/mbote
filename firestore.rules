@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Primitive Definitions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 1. Validation Helpers
+    function isValidUser(data) {
+      return data.uid == request.auth.uid 
+          && data.email is string 
+          && data.role in ['rider', 'driver']
+          && (data.keys().hasAll(['uid', 'email', 'role']))
+          && (data.displayName is string || !data.keys().contains('displayName'))
+          && (data.phoneNumber is string || !data.keys().contains('phoneNumber'))
+          && (data.currentLocation is map || !data.keys().contains('currentLocation'))
+          && (data.isActive is bool || !data.keys().contains('isActive'))
+          && (data.activeRideId is string || !data.keys().contains('activeRideId'));
+    }
+
+    function isValidRide(data) {
+      return data.riderId is string 
+          && data.status in ['requested', 'accepted', 'ongoing', 'completed', 'cancelled']
+          && data.pickup is map
+          && data.destination is map
+          && data.createdAt == request.time
+          && data.pickup.lat is number && data.pickup.lng is number
+          && data.destination.lat is number && data.destination.lng is number;
+    }
+
+    // 4. Collection Rules
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (resource.data.role == 'driver' || resource.id == request.auth.uid);
+      
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      
+      allow update: if isOwner(userId) && isValidUser(incoming()) && (
+        // Standard profile update
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'phoneNumber', 'currentLocation', 'isActive', 'activeRideId'])
+      ) || (
+        // Allow anyone to update driver's activeRideId if they are assigning a ride? 
+        // No, better to have a system flow. For now, only owner.
+        // Actually, a driver needs to accept a ride.
+        isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['activeRideId', 'currentLocation', 'isActive'])
+      );
+    }
+
+    match /rides/{rideId} {
+      // Riders can see their own rides, Drivers can see all (to find jobs)
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (
+        resource.data.riderId == request.auth.uid || 
+        resource.data.driverId == request.auth.uid ||
+        resource.data.status == 'requested'
+      );
+
+      allow create: if isSignedIn() && incoming().riderId == request.auth.uid && isValidRide(incoming());
+
+      allow update: if isSignedIn() && (
+        // Action: Driver accepts ride
+        (existing().status == 'requested' && incoming().status == 'accepted' && 
+         incoming().driverId == request.auth.uid && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'driverId', 'driverName', 'updatedAt'])) ||
+        
+        // Action: Driver starts ride
+        (existing().status == 'accepted' && existing().driverId == request.auth.uid && 
+         incoming().status == 'ongoing' && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+        
+        // Action: Driver completes ride
+        (existing().status == 'ongoing' && existing().driverId == request.auth.uid && 
+         incoming().status == 'completed' && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+
+        // Action: Rider or Driver cancels
+        (existing().status in ['requested', 'accepted'] && 
+         (existing().riderId == request.auth.uid || existing().driverId == request.auth.uid) &&
+         incoming().status == 'cancelled' && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+      );
+    }
+  }
+}

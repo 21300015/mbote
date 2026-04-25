@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ride-service
+      - auth-service
+
+  ride-service:
+    build:
+      context: ./services/ride-service
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082

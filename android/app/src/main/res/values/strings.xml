@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mbote</string>
+    <string name="title_activity_main">Mbote</string>
+    <string name="package_name">com.mbote.app</string>
+    <string name="custom_url_scheme">com.mbote.app</string>
+</resources>
