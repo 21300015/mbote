@@ -43,6 +43,8 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState<'pickup' | 'destination'>('destination');
+  const [pickupAddress, setPickupAddress] = useState("Gombe, Kinshasa");
+  const [destinationAddress, setDestinationAddress] = useState("");
 
   // 1. Get current location (Only if not in demo mode)
   useEffect(() => {
@@ -110,9 +112,12 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
     if (activeRide) return;
     if (selectionMode === 'pickup') {
       setPickupLocation(loc);
-      setSelectionMode('destination'); // Auto-switch to destination after setting pickup
+      setPickupAddress(`Map Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`);
+      setSelectionMode('destination'); // Auto-switch to destination
     } else {
       setDestination(loc);
+      setDestinationAddress(`Map Location: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}`);
+      setIsSheetExpanded(true); // Open sheet to show booking options
     }
   };
 
@@ -224,7 +229,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
         {!activeRide && (
            <div className="absolute top-24 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
               <div className="px-4 py-2 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl animate-bounce">
-                {selectionMode === 'pickup' ? 'Select Pickup on Map' : 'Select Destination on Map'}
+                {selectionMode === 'pickup' ? 'Tap Map to Set Pickup' : 'Tap Map to Set Destination'}
               </div>
            </div>
         )}
@@ -258,8 +263,8 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
               >
                 <div className="flex justify-between items-end">
                   <div>
-                    <h2 className="text-3xl font-black text-slate-900 tracking-tighter">New Mission</h2>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">Gombe District Deployment</p>
+                    <h2 className="text-3xl font-black text-slate-900 tracking-tighter italic">Mbote Ride</h2>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] mt-1">Kinshasa Premium Service</p>
                   </div>
                   {(destination || pickupLocation) && (
                     <button onClick={() => { setDestination(null); setSelectionMode('pickup'); }} className="p-2.5 bg-slate-100 rounded-full text-slate-400">
@@ -271,32 +276,36 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                 <div className="space-y-4">
                   {/* Pickup Selection */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Extraction Point</label>
-                    <button 
-                      onClick={() => { setSelectionMode('pickup'); setIsSheetExpanded(false); }}
-                      className={`w-full p-5 border rounded-2xl flex items-center gap-5 transition-all shadow-sm ${selectionMode === 'pickup' ? 'border-blue-500 bg-blue-50/30' : 'bg-slate-50 border-slate-100'}`}
-                    >
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Pickup Location</label>
+                    <div className={`w-full p-4 border rounded-2xl flex items-center gap-4 transition-all shadow-sm ${selectionMode === 'pickup' ? 'border-blue-500 bg-blue-50/30 ring-4 ring-blue-500/10' : 'bg-slate-50 border-slate-100'}`}>
                       <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.5)]"></div>
-                      <div className="flex-1 text-sm font-bold text-slate-900 truncate text-left">
-                        {pickupLocation ? `Lat: ${pickupLocation.lat.toFixed(4)}, Lng: ${pickupLocation.lng.toFixed(4)}` : "Set Extraction Point..."}
-                      </div>
+                      <input 
+                        type="text"
+                        value={pickupAddress}
+                        onChange={(e) => setPickupAddress(e.target.value)}
+                        onFocus={() => { setSelectionMode('pickup'); setIsSheetExpanded(false); }}
+                        placeholder="Type Pickup Address..."
+                        className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                      />
                       <Search size={16} className="text-slate-300" />
-                    </button>
+                    </div>
                   </div>
                   
                   {/* Destination Selection */}
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Target Hub</label>
-                    <button 
-                      onClick={() => { setSelectionMode('destination'); setIsSheetExpanded(false); }}
-                      className={`w-full p-5 border rounded-2xl flex items-center gap-5 transition-all shadow-sm ${selectionMode === 'destination' ? 'border-red-500 bg-red-50/30' : 'bg-white border-slate-100'}`}
-                    >
+                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Destination</label>
+                    <div className={`w-full p-4 border rounded-2xl flex items-center gap-4 transition-all shadow-sm ${selectionMode === 'destination' ? 'border-red-500 bg-red-50/30 ring-4 ring-red-500/10' : 'bg-white border-slate-100'}`}>
                       <div className={`w-2.5 h-2.5 rounded-full ${destination ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]' : 'bg-slate-300'}`}></div>
-                      <span className="text-sm font-bold flex-1 text-left">
-                        {destination ? `Target Hub Locked: ${destination.lat.toFixed(4)}` : "Select Target Hub..."}
-                      </span>
+                      <input 
+                        type="text"
+                        value={destinationAddress}
+                        onChange={(e) => setDestinationAddress(e.target.value)}
+                        onFocus={() => { setSelectionMode('destination'); setIsSheetExpanded(false); }}
+                        placeholder="Type Destination..."
+                        className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                      />
                       <MapPin size={16} className="text-slate-300" />
-                    </button>
+                    </div>
                   </div>
                 </div>
 
@@ -325,13 +334,13 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                   </motion.div>
                 )}
 
-                <button 
-                  disabled={!pickupLocation || !destination || isRequesting}
-                  onClick={handleRequestRide}
-                  className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.25em] shadow-2xl shadow-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4"
-                >
-                  {isRequesting ? <Loader2 /> : <>Execute Dispatch <ArrowRight className="w-5 h-5" /></>}
-                </button>
+                  <button 
+                    disabled={!pickupLocation || !destination || isRequesting}
+                    onClick={handleRequestRide}
+                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.25em] shadow-2xl shadow-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4"
+                  >
+                    {isRequesting ? <Loader2 /> : <>Book MboteRide <ArrowRight className="w-5 h-5" /></>}
+                  </button>
               </motion.div>
             ) : (
               <motion.div 
