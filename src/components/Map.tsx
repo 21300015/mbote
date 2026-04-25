@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
+import { Plus, Minus } from 'lucide-react';
 import { Location } from '../types';
 
 // Fix for default marker icons
@@ -156,7 +157,29 @@ export default function InteractiveMap({
             <Popup>Available Driver</Popup>
           </Marker>
         ))}
+        <ZoomControls />
       </MapContainer>
+    </div>
+  );
+}
+
+function ZoomControls() {
+  const map = useMap();
+  
+  return (
+    <div className="absolute right-4 bottom-32 z-[1000] flex flex-col gap-2">
+      <button 
+        onClick={(e) => { e.stopPropagation(); map.zoomIn(); }}
+        className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-900 active:scale-95 transition-all border border-white/50 backdrop-blur-md"
+      >
+        <Plus size={24} />
+      </button>
+      <button 
+        onClick={(e) => { e.stopPropagation(); map.zoomOut(); }}
+        className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-900 active:scale-95 transition-all border border-white/50 backdrop-blur-md"
+      >
+        <Minus size={24} />
+      </button>
     </div>
   );
 }
