@@ -70,26 +70,38 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
     if (localStorage.getItem('demo_mode') === 'true' && isOnline && !profile.activeRideId) {
       setAvailableRides([
         { 
-          id: 'MOCK-1', 
+          id: 'JOB-101', 
           riderName: 'Jean Kabamba', 
           gender: 'male',
           pickup: { lat: -4.3100, lng: 15.3000 }, 
-          destination: { lat: -4.3500, lng: 15.3200 }, 
-          price: 18000,
+          pickupAddress: 'La Grand Port, P824+JFV, Kinshasa',
+          destinationAddress: 'Le valable business, 012, Kinshasa',
+          travelDistance: 2.0,
+          pickupDistance: 1.2,
+          baseFare: 5000,
+          platformFee: 750,
+          price: 5750,
           status: 'requested',
           rating: 4.8,
-          comments: 'I have a large suitcase, please assist.'
+          comments: 'I have a large suitcase, please assist.',
+          paymentMethod: 'Cash'
         },
         { 
-          id: 'MOCK-2', 
+          id: 'JOB-102', 
           riderName: 'Marie Lunda', 
           gender: 'female',
           pickup: { lat: -4.3200, lng: 15.3100 }, 
-          destination: { lat: -4.3300, lng: 15.2900 }, 
-          price: 12500,
+          pickupAddress: 'Gombe District, Kinshasa',
+          destinationAddress: 'Downtown Center Hub, Limete',
+          travelDistance: 5.0,
+          pickupDistance: 0.8,
+          baseFare: 12500,
+          platformFee: 1875,
+          price: 14375,
           status: 'requested',
           rating: 5.0,
-          comments: 'Please call when you arrive at the gate.'
+          comments: 'Please call when you arrive at the gate.',
+          paymentMethod: 'Cash'
         },
       ] as any);
       return;
@@ -268,7 +280,8 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
                         key={ride.id}
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="p-6 bg-white border border-slate-100 rounded-[32px] flex items-center justify-between group hover:border-yellow-400 transition-all shadow-sm hover:shadow-md"
+                        onClick={() => setSelectedRideId(ride.id)}
+                        className="p-6 bg-white border border-slate-100 rounded-[32px] flex items-center justify-between group hover:border-yellow-400 transition-all shadow-sm hover:shadow-md cursor-pointer"
                       >
                         <div className="flex items-center gap-5">
                            <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100">
@@ -276,7 +289,7 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
                            </div>
                            <div>
                               <p className="font-black text-slate-900 text-lg leading-none">{ride.riderName}</p>
-                              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-2">Distance: 1.2 KM</p>
+                              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-2">Distance: {ride.pickupDistance?.toFixed(1) || '1.2'} KM</p>
                            </div>
                         </div>
                         <button 
@@ -484,23 +497,49 @@ function RideDetailsModal({ ride, onClose, onAccept }: { ride: any, onClose: () 
                    <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
                 </div>
                 <div className="flex-1 space-y-4">
-                   <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pickup Location</p>
-                      <p className="text-xs font-bold text-slate-700 mt-1">Gombe District, Kinshasa</p>
-                   </div>
-                   <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Drop-off Hub</p>
-                      <p className="text-xs font-bold text-slate-700 mt-1 italic">Downtown Center Hub</p>
-                   </div>
+                    <div>
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pickup Location</p>
+                       <p className="text-xs font-bold text-slate-700 mt-1">{ride.pickupAddress || 'Gombe District, Kinshasa'}</p>
+                    </div>
+                    <div>
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Drop-off Destination</p>
+                       <p className="text-xs font-bold text-slate-700 mt-1">{ride.destinationAddress || 'Downtown Center Hub'}</p>
+                    </div>
                 </div>
              </div>
 
-             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <div className="flex justify-between items-center mb-1">
-                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Estimated Fare</span>
-                   <span className="text-sm font-black text-slate-900">{ride.price.toLocaleString()} CDF</span>
-                </div>
-             </div>
+              <div className="space-y-4 p-5 bg-slate-50 rounded-3xl border border-slate-100">
+                 <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <span>Travel Distance</span>
+                    <span className="text-slate-900">{ride.travelDistance?.toFixed(1) || '0.0'} KM</span>
+                 </div>
+                 
+                 <div className="h-px bg-slate-200/50"></div>
+                 
+                 <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase">Base Fare (2,500/KM)</span>
+                       <span className="text-sm font-bold text-slate-700">{ride.baseFare?.toLocaleString() || '0'} CDF</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase">Platform Fee (15%)</span>
+                       <span className="text-sm font-bold text-slate-700">{ride.platformFee?.toLocaleString() || '0'} CDF</span>
+                    </div>
+                 </div>
+
+                 <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
+                    <span className="text-xs font-black text-slate-900 uppercase tracking-widest">Total Fare</span>
+                    <div className="text-right">
+                       <p className="text-lg font-black text-slate-900 leading-none">{ride.price.toLocaleString()} CDF</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase mt-1">~ ${(ride.price / 2800).toFixed(2)} USD</p>
+                    </div>
+                 </div>
+
+                 <div className="pt-2 flex items-center gap-2 text-green-600">
+                    <Wallet size={14} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Payment: {ride.paymentMethod || 'Cash'}</span>
+                 </div>
+              </div>
 
              {ride.comments && (
                <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 flex gap-3">
