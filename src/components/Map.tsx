@@ -28,7 +28,7 @@ const womanRiderIcon = new L.Icon({
 });
 
 const driverIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/10046/10046049.png',
   iconSize: [45, 45],
   iconAnchor: [22, 22],
   popupAnchor: [0, -20],
