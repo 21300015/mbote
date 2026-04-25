@@ -33,6 +33,17 @@ import {
 
 const KINSHASA_CENTER: Location = { lat: -4.3276, lng: 15.3139 };
 
+const KINSHASA_DISTRICTS: Record<string, Location> = {
+  'gombe': { lat: -4.3033, lng: 15.3083 },
+  'limete': { lat: -4.3475, lng: 15.3344 },
+  'bandal': { lat: -4.3411, lng: 15.2861 },
+  'kasa-vubu': { lat: -4.3375, lng: 15.3081 },
+  'ngaliema': { lat: -4.3731, lng: 15.2508 },
+  'ndjili': { lat: -4.4161, lng: 15.4183 },
+  'airport': { lat: -4.3858, lng: 15.4447 },
+  'victoire': { lat: -4.3411, lng: 15.3139 },
+};
+
 export default function RiderHome({ profile }: { profile: UserProfile }) {
   const [currentLocation, setCurrentLocation] = useState<Location>(KINSHASA_CENTER);
   const [pickupLocation, setPickupLocation] = useState<Location | null>(KINSHASA_CENTER);
@@ -245,10 +256,11 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
         className="mt-auto bg-white rounded-t-[40px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] z-30 flex flex-col relative border-t border-slate-100"
       >
         <div 
-          onClick={() => setIsSheetExpanded(!isSheetExpanded)}
-          className="w-full py-5 flex justify-center cursor-pointer"
+          onClick={() => setIsSheetExpanded(true)}
+          className="w-full pt-4 pb-2 flex flex-col items-center cursor-pointer active:bg-slate-50 transition-colors rounded-t-[40px]"
         >
-          <div className="w-14 h-1.5 bg-slate-200 rounded-full"></div>
+          <div className="w-14 h-1.5 bg-slate-200 rounded-full mb-2"></div>
+          <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Swipe or Tap to Expand</div>
         </div>
 
         <div className="px-8 flex-1 overflow-y-auto pb-28">
@@ -326,24 +338,40 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                   <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="grid grid-cols-2 gap-4"
+                    className="space-y-4"
                   >
-                    <button className="bg-yellow-50 border-2 border-yellow-400 p-5 rounded-3xl text-left transition-all hover:bg-yellow-100 shadow-sm">
-                      <div className="flex justify-between items-center mb-2">
-                         <div className="text-[10px] font-black text-yellow-800 uppercase tracking-widest">Express</div>
-                         <Car className="w-5 h-5 text-yellow-600" />
-                      </div>
-                      <div className="text-base font-black text-slate-900">Moto-Taxi</div>
-                      <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Est. 2,500 CDF</div>
-                    </button>
-                    <button className="bg-slate-50 border border-slate-100 p-5 rounded-3xl text-left opacity-40 cursor-not-allowed">
-                      <div className="flex justify-between items-center mb-2">
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Standard</div>
-                        <Car className="w-5 h-5 text-slate-300" />
-                      </div>
-                      <div className="text-base font-black text-slate-400">Mbote Car</div>
-                      <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-1">Coming Soon</div>
-                    </button>
+                    <div className="grid grid-cols-2 gap-4">
+                      <button className="bg-yellow-50 border-2 border-yellow-400 p-5 rounded-3xl text-left transition-all hover:bg-yellow-100 shadow-sm">
+                        <div className="flex justify-between items-center mb-2">
+                           <div className="text-[10px] font-black text-yellow-800 uppercase tracking-widest">Express</div>
+                           <Car className="w-5 h-5 text-yellow-600" />
+                        </div>
+                        <div className="text-base font-black text-slate-900">Moto-Taxi</div>
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Est. 2,500 CDF</div>
+                      </button>
+                      
+                      <button className="bg-white border border-slate-100 p-5 rounded-3xl text-left transition-all hover:bg-slate-50 shadow-sm opacity-60">
+                        <div className="flex justify-between items-center mb-2">
+                           <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comfort</div>
+                           <Car className="w-5 h-5 text-slate-400" />
+                        </div>
+                        <div className="text-base font-black text-slate-700">Premium Moto</div>
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Est. 4,000 CDF</div>
+                      </button>
+                    </div>
+
+                    <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-between">
+                       <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                             <span className="text-slate-900 font-black text-xs">CDF</span>
+                          </div>
+                          <div>
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment Method</p>
+                             <p className="text-sm font-bold text-slate-900">Cash on Arrival</p>
+                          </div>
+                       </div>
+                       <button className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Change</button>
+                    </div>
                   </motion.div>
                 )}
 
