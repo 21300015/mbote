@@ -56,6 +56,8 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
   const [selectionMode, setSelectionMode] = useState<'pickup' | 'destination'>('destination');
   const [pickupAddress, setPickupAddress] = useState("Gombe, Kinshasa");
   const [destinationAddress, setDestinationAddress] = useState("");
+  const [pickupPredictions, setPickupPredictions] = useState<string[]>([]);
+  const [destPredictions, setDestPredictions] = useState<string[]>([]);
 
   // 1. Get current location (Only if not in demo mode)
   useEffect(() => {
@@ -297,7 +299,15 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                       <input 
                         type="text"
                         value={pickupAddress}
-                        onChange={(e) => setPickupAddress(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPickupAddress(val);
+                          if (val.length > 1) {
+                            setPickupPredictions(Object.keys(KINSHASA_DISTRICTS).filter(k => k.includes(val.toLowerCase())));
+                          } else {
+                            setPickupPredictions([]);
+                          }
+                        }}
                         onFocus={() => { setSelectionMode('pickup'); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
@@ -308,6 +318,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                             setPickupAddress(matched ? matched.toUpperCase() + ", Kinshasa" : pickupAddress);
                             setSelectionMode('destination');
                             setIsSheetExpanded(true);
+                            setPickupPredictions([]);
                           }
                         }}
                         placeholder="Type Pickup Address..."
@@ -315,6 +326,35 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                       />
                       <Search size={16} className="text-slate-300" />
                     </div>
+
+                    {/* Pickup Predictions Dropdown */}
+                    <AnimatePresence>
+                      {pickupPredictions.length > 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute z-50 left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"
+                        >
+                          {pickupPredictions.map(pred => (
+                            <button 
+                              key={pred}
+                              onClick={() => {
+                                const loc = KINSHASA_DISTRICTS[pred];
+                                setPickupLocation(loc);
+                                setPickupAddress(pred.toUpperCase() + ", Kinshasa");
+                                setPickupPredictions([]);
+                                setSelectionMode('destination');
+                              }}
+                              className="w-full px-6 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors"
+                            >
+                              <MapPin size={14} className="text-slate-400" />
+                              <span className="text-sm font-bold text-slate-700 capitalize">{pred}, Kinshasa</span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                   
                   {/* Destination Selection */}
@@ -325,7 +365,15 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                       <input 
                         type="text"
                         value={destinationAddress}
-                        onChange={(e) => setDestinationAddress(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDestinationAddress(val);
+                          if (val.length > 1) {
+                            setDestPredictions(Object.keys(KINSHASA_DISTRICTS).filter(k => k.includes(val.toLowerCase())));
+                          } else {
+                            setDestPredictions([]);
+                          }
+                        }}
                         onFocus={() => { setSelectionMode('destination'); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
@@ -335,6 +383,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                             setDestination(loc);
                             setDestinationAddress(matched ? matched.toUpperCase() + ", Kinshasa" : destinationAddress);
                             setIsSheetExpanded(true);
+                            setDestPredictions([]);
                           }
                         }}
                         placeholder="Type Destination..."
@@ -342,6 +391,35 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                       />
                       <MapPin size={16} className="text-slate-300" />
                     </div>
+
+                    {/* Destination Predictions Dropdown */}
+                    <AnimatePresence>
+                      {destPredictions.length > 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute z-50 left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden"
+                        >
+                          {destPredictions.map(pred => (
+                            <button 
+                              key={pred}
+                              onClick={() => {
+                                const loc = KINSHASA_DISTRICTS[pred];
+                                setDestination(loc);
+                                setDestinationAddress(pred.toUpperCase() + ", Kinshasa");
+                                setDestPredictions([]);
+                                setIsSheetExpanded(true);
+                              }}
+                              className="w-full px-6 py-4 text-left hover:bg-slate-50 flex items-center gap-4 transition-colors"
+                            >
+                              <MapPin size={14} className="text-slate-400" />
+                              <span className="text-sm font-bold text-slate-700 capitalize">{pred}, Kinshasa</span>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
