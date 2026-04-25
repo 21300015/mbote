@@ -284,6 +284,13 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         value={pickupAddress}
                         onChange={(e) => setPickupAddress(e.target.value)}
                         onFocus={() => { setSelectionMode('pickup'); setIsSheetExpanded(false); }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setPickupLocation({ lat: -4.325 + Math.random()*0.01, lng: 15.31 + Math.random()*0.01 });
+                            setSelectionMode('destination');
+                            setIsSheetExpanded(true);
+                          }
+                        }}
                         placeholder="Type Pickup Address..."
                         className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300"
                       />
@@ -301,6 +308,12 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         value={destinationAddress}
                         onChange={(e) => setDestinationAddress(e.target.value)}
                         onFocus={() => { setSelectionMode('destination'); setIsSheetExpanded(false); }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setDestination({ lat: -4.34 + Math.random()*0.01, lng: 15.33 + Math.random()*0.01 });
+                            setIsSheetExpanded(true);
+                          }
+                        }}
                         placeholder="Type Destination..."
                         className="flex-1 bg-transparent border-none focus:outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300"
                       />
