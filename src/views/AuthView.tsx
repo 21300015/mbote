@@ -226,7 +226,7 @@ export default function AuthView() {
             }}
             className="w-full bg-yellow-400 text-slate-900 py-3.5 rounded-lg font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-yellow-300 transition-all mb-10 shadow-lg shadow-yellow-100"
           >
-            Launch Demo Mode (Meeting Presentation)
+            Launch Demo Mode
           </button>
 
           <p className="text-center text-sm font-medium text-slate-500">
