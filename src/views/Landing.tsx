@@ -61,10 +61,9 @@ export default function Landing() {
         >
           <div className="aspect-square bg-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl relative border-8 border-white p-2">
             <img 
-              src="https://images.unsplash.com/photo-1549194388-2469d41ec367?q=80&w=1000&auto=format&fit=crop" 
-              alt="Kinshasa"
+              src="/hero_kinshasa.png" 
+              alt="Kinshasa View"
               className="w-full h-full object-cover rounded-[2rem]"
-              referrerPolicy="no-referrer"
             />
             <div className="absolute top-8 left-8 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/50 flex gap-4 items-center animate-bounce-slow">
               <div className="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg">
