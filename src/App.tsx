@@ -29,7 +29,7 @@ export default function App() {
       setUser({ 
         uid: 'demo_user_123', 
         email: 'demo@mbote.cd',
-        displayName: 'Demo User (Meeting)',
+        displayName: 'Mbote User',
         emailVerified: true,
         isAnonymous: false,
         metadata: {},
@@ -37,7 +37,7 @@ export default function App() {
       } as any);
       setProfile({
         uid: 'demo_user_123',
-        displayName: 'Demo User (Meeting)',
+        displayName: 'Mbote User',
         email: 'demo@mbote.cd',
         role: demoRole as any,
         isActive: true,
