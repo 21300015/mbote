@@ -492,7 +492,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                 <DrawerItem icon={History} label="Ride History" />
                 <DrawerItem icon={Wallet} label="Payments" />
                 <DrawerItem icon={Settings} label="System Settings" />
-                <DrawerItem icon={Clock} label="Scheduled Missions" />
+                <DrawerItem icon={Clock} label="Scheduled Bookings" />
               </div>
 
               <button 
