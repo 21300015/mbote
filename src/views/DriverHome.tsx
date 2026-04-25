@@ -27,7 +27,10 @@ import {
   Power,
   TrendingUp,
   MapPin,
-  Settings
+  Settings,
+  MessageSquare,
+  ArrowRight,
+  Star
 } from 'lucide-react';
 
 const KINSHASA_CENTER: Location = { lat: -4.3276, lng: 15.3139 };
@@ -39,6 +42,7 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
   const [isOnline, setIsOnline] = useState(profile.isActive || false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSheetExpanded, setIsSheetExpanded] = useState(false);
+  const [selectedRideId, setSelectedRideId] = useState<string | null>(null);
 
   // 1. Watch Location & Sync (Only if not in demo mode)
   useEffect(() => {
@@ -67,19 +71,25 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
       setAvailableRides([
         { 
           id: 'MOCK-1', 
-          riderName: 'Jean K.', 
+          riderName: 'Jean Kabamba', 
+          gender: 'male',
           pickup: { lat: -4.3100, lng: 15.3000 }, 
           destination: { lat: -4.3500, lng: 15.3200 }, 
           price: 18000,
-          status: 'requested'
+          status: 'requested',
+          rating: 4.8,
+          comments: 'I have a large suitcase, please assist.'
         },
         { 
           id: 'MOCK-2', 
-          riderName: 'Marie L.', 
+          riderName: 'Marie Lunda', 
+          gender: 'female',
           pickup: { lat: -4.3200, lng: 15.3100 }, 
           destination: { lat: -4.3300, lng: 15.2900 }, 
           price: 12500,
-          status: 'requested'
+          status: 'requested',
+          rating: 5.0,
+          comments: 'Please call when you arrive at the gate.'
         },
       ] as any);
       return;
@@ -165,6 +175,13 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
           center={currentLocation}
           driverLocation={currentLocation}
           nearbyDrivers={[]} 
+          activeRides={availableRides.map(r => ({
+            id: r.id,
+            pickup: r.pickup,
+            riderName: r.riderName,
+            gender: (r as any).gender || 'male'
+          }))}
+          onRideClick={(id) => setSelectedRideId(id)}
         />
         
         {/* Floating Top Bar (White Theme) */}
@@ -381,6 +398,20 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
           </>
         )}
       </AnimatePresence>
+
+      {/* Ride Details Modal */}
+      <AnimatePresence>
+        {selectedRideId && (
+          <RideDetailsModal 
+            ride={availableRides.find(r => r.id === selectedRideId) || null} 
+            onClose={() => setSelectedRideId(null)}
+            onAccept={(ride) => {
+              acceptRide(ride);
+              setSelectedRideId(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -402,5 +433,93 @@ function NavButton({ icon: Icon, label, active, onClick }: { icon: any, label: s
       <Icon className={`w-6 h-6 transition-all ${active ? 'text-slate-900 scale-110' : 'text-slate-300 group-hover:text-slate-500'}`} />
       <span className={`text-[9px] font-black uppercase tracking-widest ${active ? 'text-slate-900' : 'text-slate-300 group-hover:text-slate-500'}`}>{label}</span>
     </button>
+  );
+}
+
+function RideDetailsModal({ ride, onClose, onAccept }: { ride: any, onClose: () => void, onAccept: (ride: any) => void }) {
+  if (!ride) return null;
+  
+  return (
+    <div className="absolute inset-0 z-[100] flex items-center justify-center p-6">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+      />
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        className="w-full max-w-sm bg-white rounded-[40px] shadow-2xl relative overflow-hidden flex flex-col border border-white"
+      >
+        <div className="p-8 pb-4">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-16 h-16 bg-slate-100 rounded-3xl overflow-hidden border-4 border-slate-50">
+               <img src={`https://ui-avatars.com/api/?name=${ride.riderName}&background=0f172a&color=fff&size=128`} className="w-full h-full" alt="" />
+            </div>
+            <button onClick={onClose} className="p-3 bg-slate-50 rounded-2xl">
+              <X size={20} className="text-slate-400" />
+            </button>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-2xl font-black text-slate-900 leading-none">{ride.riderName}</h3>
+            <div className="flex items-center gap-2 mt-3">
+               <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className={`text-sm ${i < Math.floor(ride.rating || 5) ? 'opacity-100' : 'opacity-20'}`}>★</span>
+                  ))}
+               </div>
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{ride.rating || '5.0'} Rating</span>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+             <div className="flex gap-4">
+                <div className="flex flex-col items-center gap-1 mt-1">
+                   <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                   <div className="w-0.5 h-8 bg-slate-100 rounded-full"></div>
+                   <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                </div>
+                <div className="flex-1 space-y-4">
+                   <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pickup Location</p>
+                      <p className="text-xs font-bold text-slate-700 mt-1">Gombe District, Kinshasa</p>
+                   </div>
+                   <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Drop-off Hub</p>
+                      <p className="text-xs font-bold text-slate-700 mt-1 italic">Downtown Center Hub</p>
+                   </div>
+                </div>
+             </div>
+
+             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="flex justify-between items-center mb-1">
+                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Estimated Fare</span>
+                   <span className="text-sm font-black text-slate-900">{ride.price.toLocaleString()} CDF</span>
+                </div>
+             </div>
+
+             {ride.comments && (
+               <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 flex gap-3">
+                  <div className="text-yellow-600"><MessageSquare size={16} /></div>
+                  <p className="text-[11px] font-medium text-yellow-800 leading-relaxed italic">"{ride.comments}"</p>
+               </div>
+             )}
+          </div>
+        </div>
+
+        <div className="p-6 bg-slate-50 border-t border-slate-100 mt-4">
+           <button 
+             onClick={() => onAccept(ride)}
+             className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-200 flex items-center justify-center gap-3 hover:bg-slate-800 transition-all"
+           >
+             Accept Dispatch <ArrowRight size={16} />
+           </button>
+        </div>
+      </motion.div>
+    </div>
   );
 }

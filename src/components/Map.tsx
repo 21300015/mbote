@@ -12,10 +12,19 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const riderIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/1673/1673188.png',
-  iconSize: [40, 40],
-  iconAnchor: [20, 40],
+// Premium Icon Definitions
+const manRiderIcon = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/4140/4140037.png',
+  iconSize: [45, 45],
+  iconAnchor: [22, 45],
+  popupAnchor: [0, -45],
+});
+
+const womanRiderIcon = new L.Icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/4140/4140047.png',
+  iconSize: [45, 45],
+  iconAnchor: [22, 45],
+  popupAnchor: [0, -45],
 });
 
 const driverIcon = new L.Icon({
@@ -28,19 +37,29 @@ interface MapProps {
   center: Location;
   zoom?: number;
   riderLocation?: Location;
+  riderGender?: 'male' | 'female';
   driverLocation?: Location;
   destination?: Location;
   nearbyDrivers?: { id: string, location: Location }[];
+  activeRides?: { 
+    id: string, 
+    pickup: Location, 
+    riderName: string, 
+    gender?: 'male' | 'female',
+    destination?: Location,
+    fare?: number,
+    rating?: number,
+    comments?: string
+  }[];
   onMapClick?: (loc: Location) => void;
+  onRideClick?: (rideId: string) => void;
 }
 
-// Inner component to access map context
 function MapEventsHandler({ onMapClick, center }: { onMapClick?: (loc: Location) => void, center: Location }) {
   const map = useMap();
 
   useEffect(() => {
     map.setView([center.lat, center.lng]);
-    // Important: Leaflet needs a resize trigger if it starts hidden/small
     map.invalidateSize();
     const t = setTimeout(() => map.invalidateSize(), 500);
     return () => clearTimeout(t);
@@ -61,10 +80,13 @@ export default function InteractiveMap({
   center, 
   zoom = 13, 
   riderLocation, 
+  riderGender = 'male',
   driverLocation, 
   destination,
   nearbyDrivers = [],
-  onMapClick 
+  activeRides = [],
+  onMapClick,
+  onRideClick
 }: MapProps) {
 
   return (
@@ -83,15 +105,38 @@ export default function InteractiveMap({
         
         <MapEventsHandler onMapClick={onMapClick} center={center} />
 
+        {/* Individual Rider (For Rider View) */}
         {riderLocation && (
-          <Marker position={[riderLocation.lat, riderLocation.lng]} icon={riderIcon}>
-            <Popup>Current Pickup</Popup>
+          <Marker 
+            position={[riderLocation.lat, riderLocation.lng]} 
+            icon={riderGender === 'female' ? womanRiderIcon : manRiderIcon}
+          >
+            <Popup>You are here</Popup>
           </Marker>
         )}
 
+        {/* Active Rides (For Driver View) */}
+        {activeRides.map(ride => (
+          <Marker 
+            key={ride.id} 
+            position={[ride.pickup.lat, ride.pickup.lng]} 
+            icon={ride.gender === 'female' ? womanRiderIcon : manRiderIcon}
+            eventHandlers={{
+              click: () => onRideClick?.(ride.id),
+            }}
+          >
+            <Popup>
+              <div className="p-1 font-sans">
+                <p className="font-bold text-slate-900">{ride.riderName}</p>
+                <p className="text-[10px] text-slate-500 uppercase">New Ride Request</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
         {driverLocation && (
           <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
-            <Popup>Driver</Popup>
+            <Popup>Your Location</Popup>
           </Marker>
         )}
 
