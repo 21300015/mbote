@@ -62,8 +62,11 @@ function MapEventsHandler({ onMapClick, center }: { onMapClick?: (loc: Location)
   useEffect(() => {
     map.setView([center.lat, center.lng]);
     map.invalidateSize();
-    const t = setTimeout(() => map.invalidateSize(), 500);
-    return () => clearTimeout(t);
+    // Aggressive re-renders for Android layout shifts
+    setTimeout(() => map.invalidateSize(), 100);
+    setTimeout(() => map.invalidateSize(), 500);
+    setTimeout(() => map.invalidateSize(), 1000);
+    setTimeout(() => map.invalidateSize(), 2000);
   }, [center, map]);
 
   useMapEvents({
@@ -91,17 +94,17 @@ export default function InteractiveMap({
 }: MapProps) {
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-slate-100">
+    <div className="absolute inset-0 w-full h-full bg-slate-100 overflow-hidden relative">
       <MapContainer 
         center={[center.lat, center.lng]} 
         zoom={zoom} 
         scrollWheelZoom={true}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: '100%', width: '100%', minHeight: '100%' }}
         zoomControl={false}
       >
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; CARTO'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap contributors'
         />
         
         <MapEventsHandler onMapClick={onMapClick} center={center} />
