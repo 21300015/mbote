@@ -40,10 +40,14 @@ function MapController({ center, onMapClick }: { center: Location, onMapClick?: 
 
   useEffect(() => {
     map.setView([center.lat, center.lng]);
-    // Force a resize calculation
-    setTimeout(() => {
+    
+    // Invalidate size immediately and then after a delay to handle transitions
+    map.invalidateSize();
+    const timer = setTimeout(() => {
       map.invalidateSize();
-    }, 250);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [center, map]);
 
   useMapEvents({
@@ -68,16 +72,17 @@ export default function InteractiveMap({
 }: MapProps) {
 
   return (
-    <div className="w-full h-full relative" style={{ minHeight: '300px' }}>
+    <div className="w-full h-full relative overflow-hidden bg-slate-50">
       <MapContainer 
         center={[center.lat, center.lng]} 
         zoom={zoom} 
         className="h-full w-full"
-        style={{ height: '100%', width: '100%', position: 'absolute', inset: 0 }}
+        style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}
+        zoomControl={false}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         
         <MapController center={center} onMapClick={onMapClick} />

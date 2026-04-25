@@ -185,7 +185,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-white overflow-hidden font-sans">
+    <div className="h-screen w-screen flex flex-col bg-white overflow-hidden font-sans relative">
       
       {/* 1. Map Area (Full Screen Background) */}
       <main className="absolute inset-0 w-full h-full z-0">
