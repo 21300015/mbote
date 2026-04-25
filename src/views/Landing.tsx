@@ -8,9 +8,7 @@ export default function Landing() {
       {/* Top Navigation Bar */}
       <nav className="h-16 bg-slate-900 text-white flex items-center justify-between px-8 shrink-0 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-yellow-400 rounded flex items-center justify-center">
-            <span className="text-slate-900 font-black text-xl">M</span>
-          </div>
+          <img src="/Mbote%20Ride%20Logo.png" alt="Mbote Ride Logo" className="w-10 h-10 object-contain" />
           <span className="text-xl font-display font-bold tracking-tight italic">MboteRide</span>
         </div>
         <div className="flex items-center gap-6">

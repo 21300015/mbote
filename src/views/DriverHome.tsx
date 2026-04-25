@@ -376,8 +376,8 @@ export default function DriverHome({ profile }: { profile: UserProfile }) {
               className="absolute left-0 top-0 bottom-0 w-[85%] bg-white z-[70] shadow-2xl p-10 flex flex-col"
             >
               <div className="flex justify-between items-center mb-12">
-                <div className="w-14 h-14 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-100">
-                  <span className="text-slate-900 font-black text-3xl italic">M</span>
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-slate-100 overflow-hidden">
+                  <img src="/Mbote%20Ride%20Logo.png" alt="Mbote Ride Logo" className="w-full h-full object-contain" />
                 </div>
                 <button onClick={() => setIsMenuOpen(false)} className="p-3 bg-slate-100 rounded-2xl">
                   <X size={24} className="text-slate-500" />
