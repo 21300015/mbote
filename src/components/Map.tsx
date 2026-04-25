@@ -28,10 +28,10 @@ const womanRiderIcon = new L.Icon({
 });
 
 const driverIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/3103/3103392.png', // Clear Yellow Motorbike
-  iconSize: [50, 50],
-  iconAnchor: [25, 25],
-  popupAnchor: [0, -25],
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/5637/5637217.png', // Clear Yellow Motorbike
+  iconSize: [45, 45],
+  iconAnchor: [22, 22],
+  popupAnchor: [0, -20],
 });
 
 interface MapProps {
