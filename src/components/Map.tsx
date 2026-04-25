@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { Location } from '../types';
 
@@ -34,11 +34,26 @@ interface MapProps {
   onMapClick?: (loc: Location) => void;
 }
 
-function ChangeView({ center }: { center: Location }) {
+// Sub-component to handle map resizing and view changes
+function MapController({ center, onMapClick }: { center: Location, onMapClick?: (loc: Location) => void }) {
   const map = useMap();
+
   useEffect(() => {
     map.setView([center.lat, center.lng]);
+    // Force a resize calculation
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 250);
   }, [center, map]);
+
+  useMapEvents({
+    click(e) {
+      if (onMapClick) {
+        onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
+      }
+    },
+  });
+
   return null;
 }
 
@@ -53,61 +68,45 @@ export default function InteractiveMap({
 }: MapProps) {
 
   return (
-    <MapContainer 
-      center={[center.lat, center.lng]} 
-      zoom={zoom} 
-      className="h-full w-full"
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <ChangeView center={center} />
+    <div className="w-full h-full relative" style={{ minHeight: '300px' }}>
+      <MapContainer 
+        center={[center.lat, center.lng]} 
+        zoom={zoom} 
+        className="h-full w-full"
+        style={{ height: '100%', width: '100%', position: 'absolute', inset: 0 }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        
+        <MapController center={center} onMapClick={onMapClick} />
 
-      {riderLocation && (
-        <Marker position={[riderLocation.lat, riderLocation.lng]} icon={riderIcon}>
-          <Popup>Rider Location</Popup>
-        </Marker>
-      )}
+        {riderLocation && (
+          <Marker position={[riderLocation.lat, riderLocation.lng]} icon={riderIcon}>
+            <Popup>Rider Location</Popup>
+          </Marker>
+        )}
 
-      {driverLocation && (
-        <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
-          <Popup>Driver Location</Popup>
-        </Marker>
-      )}
+        {driverLocation && (
+          <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
+            <Popup>Driver Location</Popup>
+          </Marker>
+        )}
 
-      {destination && (
-        <Marker position={[destination.lat, destination.lng]}>
-          <Popup>Destination</Popup>
-          <Circle center={[destination.lat, destination.lng]} radius={100} color="red" />
-        </Marker>
-      )}
+        {destination && (
+          <Marker position={[destination.lat, destination.lng]}>
+            <Popup>Destination</Popup>
+            <Circle center={[destination.lat, destination.lng]} radius={100} color="red" />
+          </Marker>
+        )}
 
-      {nearbyDrivers.map(driver => (
-        <Marker key={driver.id} position={[driver.location.lat, driver.location.lng]} icon={driverIcon}>
-          <Popup>Available Driver</Popup>
-        </Marker>
-      ))}
-      
-      <MapEventHandler onMapClick={onMapClick} />
-    </MapContainer>
+        {nearbyDrivers.map(driver => (
+          <Marker key={driver.id} position={[driver.location.lat, driver.location.lng]} icon={driverIcon}>
+            <Popup>Available Driver</Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
-}
-
-function MapEventHandler({ onMapClick }: { onMapClick?: (loc: Location) => void }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!onMapClick) return;
-    
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng });
-    };
-
-    map.on('click', handleClick);
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [map, onMapClick]);
-  
-  return null;
 }
