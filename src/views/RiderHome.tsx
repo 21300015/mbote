@@ -298,7 +298,11 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         onFocus={() => { setSelectionMode('pickup'); setIsSheetExpanded(false); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            setPickupLocation({ lat: -4.325 + Math.random()*0.01, lng: 15.31 + Math.random()*0.01 });
+                            const query = pickupAddress.toLowerCase().trim();
+                            const matched = Object.keys(KINSHASA_DISTRICTS).find(k => query.includes(k));
+                            const loc = matched ? KINSHASA_DISTRICTS[matched] : { lat: -4.325 + Math.random()*0.01, lng: 15.31 + Math.random()*0.01 };
+                            setPickupLocation(loc);
+                            setPickupAddress(matched ? matched.toUpperCase() + ", Kinshasa" : pickupAddress);
                             setSelectionMode('destination');
                             setIsSheetExpanded(true);
                           }
@@ -322,7 +326,11 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         onFocus={() => { setSelectionMode('destination'); setIsSheetExpanded(false); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            setDestination({ lat: -4.34 + Math.random()*0.01, lng: 15.33 + Math.random()*0.01 });
+                            const query = destinationAddress.toLowerCase().trim();
+                            const matched = Object.keys(KINSHASA_DISTRICTS).find(k => query.includes(k));
+                            const loc = matched ? KINSHASA_DISTRICTS[matched] : { lat: -4.34 + Math.random()*0.01, lng: 15.33 + Math.random()*0.01 };
+                            setDestination(loc);
+                            setDestinationAddress(matched ? matched.toUpperCase() + ", Kinshasa" : destinationAddress);
                             setIsSheetExpanded(true);
                           }
                         }}
