@@ -204,11 +204,14 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
     <div className="h-screen w-screen flex flex-col bg-white overflow-hidden font-sans relative">
       
       <InteractiveMap 
-        center={pickupLocation || currentLocation}
-        riderLocation={pickupLocation || currentLocation}
-        destination={destination || activeRide?.destination || undefined}
+        center={currentLocation}
+        riderLocation={pickupLocation || undefined}
+        destination={destination || undefined}
         nearbyDrivers={nearbyDrivers}
-        onMapClick={handleMapClick}
+        onMapClick={(loc) => {
+          handleMapClick(loc);
+          setIsSheetExpanded(false); // Shrink on map touch
+        }}
       />
         
       {/* Floating Top Bar (White Theme) */}
@@ -295,7 +298,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         type="text"
                         value={pickupAddress}
                         onChange={(e) => setPickupAddress(e.target.value)}
-                        onFocus={() => { setSelectionMode('pickup'); setIsSheetExpanded(false); }}
+                        onFocus={() => { setSelectionMode('pickup'); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             const query = pickupAddress.toLowerCase().trim();
@@ -323,7 +326,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                         type="text"
                         value={destinationAddress}
                         onChange={(e) => setDestinationAddress(e.target.value)}
-                        onFocus={() => { setSelectionMode('destination'); setIsSheetExpanded(false); }}
+                        onFocus={() => { setSelectionMode('destination'); }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             const query = destinationAddress.toLowerCase().trim();
