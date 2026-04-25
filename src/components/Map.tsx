@@ -14,24 +14,24 @@ L.Icon.Default.mergeOptions({
 
 // Premium Icon Definitions
 const manRiderIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/4140/4140037.png',
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/236/236831.png', // Clear Male Icon
   iconSize: [45, 45],
   iconAnchor: [22, 45],
   popupAnchor: [0, -45],
 });
 
 const womanRiderIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/4140/4140047.png',
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/236/236832.png', // Clear Female Icon
   iconSize: [45, 45],
   iconAnchor: [22, 45],
   popupAnchor: [0, -45],
 });
 
 const driverIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/10046/10046049.png',
-  iconSize: [45, 45],
-  iconAnchor: [22, 22],
-  popupAnchor: [0, -20],
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/3103/3103392.png', // Clear Yellow Motorbike
+  iconSize: [50, 50],
+  iconAnchor: [25, 25],
+  popupAnchor: [0, -25],
 });
 
 interface MapProps {
