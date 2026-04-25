@@ -352,7 +352,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                     onClick={handleRequestRide}
                     className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.25em] shadow-2xl shadow-slate-200 hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-4"
                   >
-                    {isRequesting ? <Loader2 /> : <>Book MboteRide <ArrowRight className="w-5 h-5" /></>}
+                    {isRequesting ? <Loader2 className="animate-spin" /> : <>BOOK <ArrowRight className="w-5 h-5" /></>}
                   </button>
               </motion.div>
             ) : (
