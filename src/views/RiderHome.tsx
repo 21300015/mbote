@@ -187,18 +187,16 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
   return (
     <div className="h-screen w-screen flex flex-col bg-white overflow-hidden font-sans relative">
       
-      {/* 1. Map Area (Full Screen Background) */}
-      <main className="absolute inset-0 w-full h-full z-0">
-        <InteractiveMap 
-          center={pickupLocation || currentLocation}
-          riderLocation={pickupLocation || currentLocation}
-          destination={destination || activeRide?.destination || undefined}
-          nearbyDrivers={nearbyDrivers}
-          onMapClick={handleMapClick}
-        />
+      <InteractiveMap 
+        center={pickupLocation || currentLocation}
+        riderLocation={pickupLocation || currentLocation}
+        destination={destination || activeRide?.destination || undefined}
+        nearbyDrivers={nearbyDrivers}
+        onMapClick={handleMapClick}
+      />
         
-        {/* Floating Top Bar (White Theme) */}
-        <div className="absolute top-8 left-6 right-6 flex justify-between items-center pointer-events-none z-10">
+      {/* Floating Top Bar (White Theme) */}
+      <div className="absolute top-8 left-6 right-6 flex justify-between items-center pointer-events-none z-10">
           <button 
             onClick={() => setIsMenuOpen(true)}
             className="w-12 h-12 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl flex items-center justify-center pointer-events-auto border border-white/50 backdrop-blur-sm"
@@ -230,7 +228,6 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
               </div>
            </div>
         )}
-      </main>
 
       {/* 2. Bottom Booking Panel (White Theme) */}
       <motion.aside 

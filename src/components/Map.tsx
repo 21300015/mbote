@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Circle, useMapEvents } 
 import L from 'leaflet';
 import { Location } from '../types';
 
-// Fix for default marker icons in Leaflet with React
+// Fix for default marker icons
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -34,20 +34,16 @@ interface MapProps {
   onMapClick?: (loc: Location) => void;
 }
 
-// Sub-component to handle map resizing and view changes
-function MapController({ center, onMapClick }: { center: Location, onMapClick?: (loc: Location) => void }) {
+// Inner component to access map context
+function MapEventsHandler({ onMapClick, center }: { onMapClick?: (loc: Location) => void, center: Location }) {
   const map = useMap();
 
   useEffect(() => {
     map.setView([center.lat, center.lng]);
-    
-    // Invalidate size immediately and then after a delay to handle transitions
+    // Important: Leaflet needs a resize trigger if it starts hidden/small
     map.invalidateSize();
-    const timer = setTimeout(() => {
-      map.invalidateSize();
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => map.invalidateSize(), 500);
+    return () => clearTimeout(t);
   }, [center, map]);
 
   useMapEvents({
@@ -72,30 +68,30 @@ export default function InteractiveMap({
 }: MapProps) {
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-slate-50">
+    <div className="absolute inset-0 w-full h-full bg-slate-100">
       <MapContainer 
         center={[center.lat, center.lng]} 
         zoom={zoom} 
-        className="h-full w-full"
-        style={{ height: '100%', width: '100%', position: 'absolute', top: 0, left: 0 }}
+        scrollWheelZoom={true}
+        style={{ height: '100%', width: '100%' }}
         zoomControl={false}
       >
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; CARTO'
         />
         
-        <MapController center={center} onMapClick={onMapClick} />
+        <MapEventsHandler onMapClick={onMapClick} center={center} />
 
         {riderLocation && (
           <Marker position={[riderLocation.lat, riderLocation.lng]} icon={riderIcon}>
-            <Popup>Rider Location</Popup>
+            <Popup>Current Pickup</Popup>
           </Marker>
         )}
 
         {driverLocation && (
           <Marker position={[driverLocation.lat, driverLocation.lng]} icon={driverIcon}>
-            <Popup>Driver Location</Popup>
+            <Popup>Driver</Popup>
           </Marker>
         )}
 
