@@ -577,7 +577,7 @@ export default function RiderHome({ profile }: { profile: UserProfile }) {
                 onClick={handleLogout}
                 className="w-full p-5 bg-red-50 text-red-600 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-100 transition-colors"
               >
-                <LogOut size={18} /> Abort Session
+                <LogOut size={18} /> Log Out
               </button>
             </motion.div>
           </>

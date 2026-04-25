@@ -22,36 +22,35 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Demo Mode Check
-    const isDemo = localStorage.getItem('demo_mode') === 'true';
-    if (isDemo) {
-      const demoRole = localStorage.getItem('demo_role') || 'rider';
-      setUser({ 
-        uid: 'demo_user_123', 
-        email: 'demo@mbote.cd',
-        displayName: 'Mbote User',
-        emailVerified: true,
-        isAnonymous: false,
-        metadata: {},
-        providerData: [],
-      } as any);
-      setProfile({
-        uid: 'demo_user_123',
-        displayName: 'Mbote User',
-        email: 'demo@mbote.cd',
-        role: demoRole as any,
-        isActive: true,
-        activeRideId: null,
-      } as UserProfile);
-      setLoading(false);
-      return;
-    }
-
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      if (!u) {
-        setProfile(null);
+      const isDemo = localStorage.getItem('demo_mode') === 'true';
+      
+      if (isDemo) {
+        const demoRole = localStorage.getItem('demo_role') || 'rider';
+        setUser({ 
+          uid: 'demo_user_123', 
+          email: 'demo@mbote.cd',
+          displayName: 'Mbote User',
+          emailVerified: true,
+          isAnonymous: false,
+          metadata: {},
+          providerData: [],
+        } as any);
+        setProfile({
+          uid: 'demo_user_123',
+          displayName: 'Mbote User',
+          email: 'demo@mbote.cd',
+          role: demoRole as any,
+          isActive: true,
+          activeRideId: null,
+        } as UserProfile);
         setLoading(false);
+      } else {
+        setUser(u);
+        if (!u) {
+          setProfile(null);
+          setLoading(false);
+        }
       }
     });
 
